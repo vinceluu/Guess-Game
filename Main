@@ -1,0 +1,111 @@
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public final class GuessGame extends JFrame {
+
+    private int number;
+    private int guess;
+    private int highest;
+    private int lowest;
+    private JTextField guessInput;
+    private JTextField message;
+    private final JLabel text1, text2;
+    private final JButton newGame;
+
+    public GuessGame() {
+        super("Guess the Number Game");
+        text1 = new JLabel("I have a number between 1 and 1000.");
+        text2 = new JLabel("Can you guess my"
+                + " number? \nPlease enter your first guess.");
+
+        highest = 0; 
+        lowest = 1000;
+        //creating labels and texts, allowing guess to be editable
+        guessInput = new JTextField(5);
+        guessInput.addActionListener(new GuessHandler());
+        message = new JTextField("<- Enter Number Here", 15);
+        message.setEditable(false);
+
+        newGame = new JButton("New Game");
+        newGame.addActionListener((ActionEvent e) -> {
+            message.setText("<- Enter Number Here");
+            guessInput.setText("");
+            guessInput.setEditable(true);
+
+// for Each new Game sets the background Color
+            getContentPane().setBackground(Color.LIGHT_GRAY);
+            theGame();
+        });
+
+        Container c = getContentPane();
+        c.setLayout(new FlowLayout());
+        c.add(text1);
+        c.add(text2);
+        c.add(guessInput);
+        c.add(message);
+        c.add(newGame);
+        setSize(300, 200);
+        show();
+        theGame();
+    }
+
+    public void theGame() { //creates a randomly generated number
+        number = (int) (Math.random() * 1000 + 1);
+    }
+
+    public static void main(String args[]) {
+        GuessGame app = new GuessGame();
+
+        app.addWindowListener(
+                new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        }
+        );
+    }
+
+   class GuessHandler implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+            guess = Integer.parseInt(guessInput.getText());
+            
+          
+
+            if (guess > number) {
+                message.setText("Too High");
+
+                if (guess < lowest) { //sets new point of reference
+                    lowest = guess; 
+                    getContentPane().setBackground(Color.red); // Tells user warmer
+                } else {
+                    getContentPane().setBackground(Color.blue); // Tells user colder
+                }
+            } else if (guess < number) { 
+                message.setText("Too Low");
+
+                if (guess > highest) { //sets new point of reference
+                    highest = guess;
+                    getContentPane().setBackground(Color.red); // warmer
+                } else {
+                    getContentPane().setBackground(Color.blue);   // colder
+                }   
+            } 
+             
+            else { //none of the if statements were caught thus correct number was chosen
+                message.setText("Correct!");
+                getContentPane().setBackground(Color.white);
+                guessInput.setEditable(false);
+                lowest = 1000;
+                highest = 0;
+            }
+
+            repaint();
+        }
+    }
+}
